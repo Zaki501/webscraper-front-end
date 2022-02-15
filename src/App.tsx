@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter,
+  // Switch,
+  Route,
+  Routes,
+  Link
+} from 'react-router-dom';
 import './App.css';
 import Form from './components/form';
+import Home from './routes/home';
+import Profile from './routes/profile';
+import Register from './routes/register';
 import UrlForm from './components/url_form';
+
 
 interface Data {
   name: string,
@@ -123,14 +134,49 @@ function App() {
 
   return (
     <div className="App">
+      <BrowserRouter>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/home">Home</Link>
+            </li>
+            <li>
+              <Link to="/Register">Register</Link>
+            </li>
+            <li>
+              <Link to="/Profile">Profile</Link>
+            </li>
+          </ul>
+        </nav>
+        <Routes>
+          <Route path="/home" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
 
-      <h1>React front end</h1>
+        {/* A <Switch> looks through its children <Route>s and
+            renders the first one that matches the current URL. */}
+        {/* <Switch>
+          <Route path="/">
+            <Home />
+          </Route>
+          <Route path="/Register">
+            <Register />
+          </Route>
+          <Route path="/Profile">
+            <Profile />
+          </Route>
+        </Switch> */}
+      </div>
+    </BrowserRouter>
+      {/* <h1>React front end</h1>
       <h2>{TestData}</h2>
       <h2>Name: {InputData.name}</h2>
       <h2>Email: {InputData.email} </h2>
       <Form InputData={InputData} handleInputData={handleInputData} postInputData={postInputData} getData={getData} />
       <h2>{ConfirmationData?.img_src}</h2>
-      <UrlForm UrlData={UrlData} handleUrlData={handleUrlData} postUrlData={postUrlData} ConfirmationData={ConfirmationData} />
+      <UrlForm UrlData={UrlData} handleUrlData={handleUrlData} postUrlData={postUrlData} ConfirmationData={ConfirmationData} /> */}
     </div>
   );
 }
