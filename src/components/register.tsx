@@ -3,7 +3,7 @@ const Register = (props: {}) => {
     return (
         <div>
             <h2>
-                Register page !!
+                Register page !!!
             </h2>
         </div>
 
