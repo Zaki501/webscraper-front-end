@@ -12,6 +12,7 @@ import Home from './routes/home';
 import Profile from './routes/profile';
 import Register from './routes/register';
 import UrlForm from './components/url_form';
+import Login from './routes/login';
 
 
 interface Data {
@@ -25,6 +26,16 @@ interface ItemData {
   price: string
 }
 
+interface RegistrationForm {
+  email: string,
+  password: string
+}
+
+interface LoginForm {
+  email: string,
+  password: string
+}
+
 function App() {
   const [InputData, setInputData] = useState<Data>({
     name: "",
@@ -34,7 +45,17 @@ function App() {
   // for url_form
   const [UrlData, setUrlData] = useState<string>("");
   const [ConfirmationData, setConfirmationData] = useState<ItemData | null>(null)
-  ///
+  //////////////////////
+  const [RegData, setRegData] = useState<RegistrationForm>({
+    email: "",
+    password: "",
+  })
+  const [LoginData, setLoginData] = useState<LoginForm>({
+    email: "",
+    password: ""
+  })
+  // const [UserProfile, setUserProfile] = 
+
   const getData = async () => {
 
     // both ways work
@@ -127,37 +148,159 @@ function App() {
       });
   }
 
-  useEffect(() => {
-    getData()
-  }, [])
+  ///////////////////
+  const handleRegData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegData({
+      ...RegData,
+      [e.target.name]: e.target.value,
+    })
+  }
 
+  const postRegData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    console.log(RegData)
+    if (confirmRegistrationFormData() === false) {
+      alert('Email and/or password not matching!');
+      return
+    }
+    else {
+      console.log("Matching regForm")
+      fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json, text/plain, */*',
+        },
+        body: JSON.stringify(RegData)
+      }).then((response) => {
+        console.log(response.statusText)
+        console.log(response.status)
+        if (response.statusText === "OK" && response.status >= 200 && response.status < 300) {
+          return response.text()
+        } else {
+          throw new Error("Server can't be reached!")
+        }
+      })
+        .then(data => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+  }
+
+  const handleLoginData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(LoginData)
+    setLoginData({
+      ...LoginData,
+      [e.target.name]: e.target.value,
+    })
+  }
+  const postLoginData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    console.log("Matching regForm")
+    console.log(LoginData)
+    fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json, text/plain, */*',
+      },
+      body: JSON.stringify(LoginData)
+    }).then((response) => {
+      console.log(response.statusText)
+      console.log(response.status)
+      if (response.statusText === "OK" && response.status >= 200 && response.status < 300) {
+        return response.text()
+      } else {
+        throw new Error("Server can't be reached!")
+      }
+    })
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+  const confirmRegistrationFormData = () => {
+    const email = document.getElementById("RegEmail") as HTMLInputElement;
+    const confirmemail = document.getElementById("RegConfirmEmail") as HTMLInputElement;
+    const password = document.getElementById("RegPassword") as HTMLInputElement;
+    const confirmpassword = document.getElementById("RegConfirmPassword") as HTMLInputElement;
+
+    console.log(email.value, confirmemail.value, password.value, confirmpassword.value)
+    if (email.value !== confirmemail.value || password.value !== confirmpassword.value) {
+      return false
+    }
+    else {
+      return true
+    }
+  }
+
+  const userProfile = () => {
+    fetch('/profile', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json, text/plain, */*',
+      },
+      // body: JSON.stringify(LoginData)
+    }).then((response) => {
+      console.log(response.statusText)
+      console.log(response.status)
+      if (response.statusText === "OK" && response.status >= 200 && response.status < 300) {
+        return response.text()
+      } else {
+        throw new Error("Server can't be reached!")
+      }
+    })
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+  // useEffect(() => {
+  //   getData()
+  // }, [])
+  // }
 
   return (
     <div className="App">
       <BrowserRouter>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/home">Home</Link>
-            </li>
-            <li>
-              <Link to="/Register">Register</Link>
-            </li>
-            <li>
-              <Link to="/Profile">Profile</Link>
-            </li>
-          </ul>
-        </nav>
-        <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/home">Home</Link>
+              </li>
+              <li>
+                <Link to="/Register">Register</Link>
+              </li>
+              <li>
+                <Link to="/Profile">Profile</Link>
+              </li>
+              <li>
+                <Link to="/Login">Log in</Link>
+              </li>
+            </ul>
+          </nav>
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/register" element={<Register RegData={RegData} handleRegData={handleRegData} postRegData={postRegData} />} />
+            <Route path="/profile" element={<Profile userProfile={userProfile}/>} />
+            <Route path="/login" element={<Login LoginData={LoginData} handleLoginData={handleLoginData} postLoginData={postLoginData}/>} />
+          </Routes>
 
-        {/* A <Switch> looks through its children <Route>s and
+          {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-        {/* <Switch>
+          {/* <Switch>
           <Route path="/">
             <Home />
           </Route>
@@ -168,8 +311,8 @@ function App() {
             <Profile />
           </Route>
         </Switch> */}
-      </div>
-    </BrowserRouter>
+        </div>
+      </BrowserRouter>
       {/* <h1>React front end</h1>
       <h2>{TestData}</h2>
       <h2>Name: {InputData.name}</h2>
@@ -181,4 +324,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
